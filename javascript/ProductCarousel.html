@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Carousel</title>
+    <style>
+        @import url("https://fonts.googleapis.com/css?family=Lora:400,400i,700");
+
+        body {
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background: #ECEFFC;
+        }
+
+        .carousel {
+            position: relative;
+            display: flex;
+        }
+
+        .carousel .slides {
+            position: relative;
+            top: -4em;
+            left: 10em;
+        }
+
+        .carousel .slides img {
+            position: absolute;
+            width: 450px;
+            height: 450px;
+            opacity: 0;
+            z-index: 9999;
+        }
+
+        .carousel .slides img.active {
+            opacity: 1;
+        }
+
+        .carousel .overlays {
+            position: relative;
+            width: 36em;
+            height: 18em;
+        }
+
+        .carousel .overlays .bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--bar-color);
+            transform-origin: left;
+        }
+
+        .carousel .nav-links {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-start;
+            margin: 0;
+            padding: 0 0 0 6em;
+            list-style-type: none;
+        }
+
+        .carousel .nav-links .nav-link {
+            font-size: 2rem;
+            font-family: Lora, serif;
+            line-height: 2;
+            text-decoration: none;
+            color: #7f8c8d;
+            transition: 0.3s;
+        }
+
+        .carousel .nav-links .nav-link:hover {
+            color: #1c1e1f;
+        }
+
+        .carousel .nav-links .nav-link.active {
+            color: black;
+            pointer-events: none;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="carousel">
+        <div class="slides">
+            <img src="https://i.loli.net/2020/01/20/2wx8npJFiDUzu4T.png" alt="Stainless Steel" />
+            <img src="https://i.loli.net/2020/01/20/YWA6RhCcESgN3Ty.png" alt="Army Green" />
+            <img src="https://i.loli.net/2020/01/19/4HaLyI7NQRf3teO.png" alt="Cranberry" />
+            <img src="https://i.loli.net/2020/01/19/QVY6JSEbqiOvAp1.png" alt="Midnight Blue" />
+        </div>
+        <div class="overlays">
+            <div class="bar" style="--bar-color: #bdc3c7;"></div>
+            <div class="bar" style="--bar-color: #218c74;"></div>
+            <div class="bar" style="--bar-color: #dd6b7b;"></div>
+            <div class="bar" style="--bar-color: #30465c;"></div>
+        </div>
+        <ul class="nav-links">
+            <li><a href="#" class="nav-link">Stainless Steel</a></li>
+            <li><a href="#" class="nav-link">Army Green</a></li>
+            <li><a href="#" class="nav-link">Cranberry</a></li>
+            <li><a href="#" class="nav-link">Midnight Blue</a></li>
+        </ul>
+    </div>
+
+
+    <script>
+        let navLinks = document.querySelectorAll(".carousel .nav-link");
+        let slides = document.querySelectorAll(".carousel .slides img");
+        let overlays = document.querySelectorAll(".carousel .bar");
+        let maxZIndex = navLinks.length;
+        let easeInOutQuart = "cubic-bezier(0.77, 0, 0.175, 1)";
+        slides[0].classList.add("active");
+        navLinks[0].classList.add("active");
+        navLinks.forEach((navLink, activeIndex) => {
+            // (overlays[activeIndex] as HTMLElement).style.zIndex = `${navLinks.length -
+            (overlays[activeIndex]).style.zIndex = `${navLinks.length -
+                activeIndex}`;
+            navLink.addEventListener("click", () => {
+                // nav-link
+                navLinks.forEach(navLink => navLink.classList.remove("active"));
+                navLink.classList.add("active");
+                // slide
+                let currentSlide = document.querySelector(".carousel .slides img.active");
+                let slideFadeOut = currentSlide.animate(
+                    [
+                        { transform: "translateX(0)", opacity: 1 },
+                        { transform: "translateX(5%)", opacity: 0 }
+                    ],
+                    {
+                        duration: 600,
+                        easing: "ease-in",
+                        fill: "forwards"
+                    }
+                );
+                slideFadeOut.onfinish = () => {
+                    slides.forEach(slide => slide.classList.remove("active"));
+                    let activeSlide = slides[activeIndex];
+                    activeSlide.classList.add("active");
+                    activeSlide.animate(
+                        [
+                            {
+                                transform: "translateX(-5%)",
+                                opacity: 0
+                            },
+                            {
+                                transform: "translateX(0)",
+                                opacity: 1
+                            }
+                        ],
+                        { duration: 600, easing: "ease-out", fill: "forwards" }
+                    );
+                };
+                // overlay
+                maxZIndex += 1;
+                let activeOverlay = overlays[activeIndex];
+                // (activeOverlay as HTMLElement).style.zIndex = `${maxZIndex}`;
+                (activeOverlay).style.zIndex = `${maxZIndex}`;
+                activeOverlay.animate(
+                    [{ transform: "scaleX(0)" }, { transform: "scaleX(1)" }],
+                    { duration: 1200, fill: "forwards", easing: easeInOutQuart }
+                );
+            });
+        });
+
+    </script>
+</body>
+
+</html>

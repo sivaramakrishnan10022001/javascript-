@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Compress files</title>
+    <style>
+        .button {
+            --button-width: 152px;
+            --background: #404660;
+            --background-transparent: rgba(64, 70, 96, 0);
+            --background-hover: #3A4059;
+            --background-back: #1E2235;
+            --shadow: rgba(0, 9, 61, 0.125);
+            --text: #F6F8FF;
+            --paper: #F6F8FF;
+            --paper-lines: #D1D6EE;
+            --paper-shadow: rgba(0, 9, 61, 0.15);
+            --zipper: #BBC1E1;
+            --zipper-end: #D1D6EE;
+            --zipper-line: #8A91B4;
+            --zipper-lines: #646B8C;
+            --tick: #F6F8FF;
+            display: flex;
+            outline: none;
+            cursor: pointer;
+            text-align: center;
+            border: 0;
+            padding: 0;
+            line-height: 24px;
+            font-family: inherit;
+            font-weight: 600;
+            font-size: 14px;
+            border-radius: 3px;
+            color: var(--text);
+            background: var(--background-back);
+            transition: transform 0.3s;
+            transform: scale(var(--scale, 1)) translateZ(0);
+            -webkit-appearance: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .button:not(.compress):active {
+            --scale: 0.95;
+        }
+
+        .button:not(.compress):hover {
+            --b: var(--background-hover);
+        }
+
+        .button .paper {
+            width: 26px;
+            height: 32px;
+            pointer-events: none;
+            position: absolute;
+            top: -2px;
+            left: var(--left, 50%);
+            margin: 0 0 0 -13px;
+            background: var(--paper);
+            border-radius: 3px;
+            box-shadow: 0 1px 1px var(--paper-shadow);
+            opacity: 0;
+            transform: translate(var(--x, 0), var(--y, -68px));
+        }
+
+        .button .paper:before {
+            content: '';
+            position: absolute;
+            left: 4px;
+            top: 6px;
+            width: 18px;
+            height: 2px;
+            border-radius: 1px;
+            background: var(--paper-lines);
+            box-shadow: 0 6px 0 var(--paper-lines), 0 12px 0 var(--paper-lines), 0 18px 0 var(--paper-lines);
+        }
+
+        .button .paper.left {
+            --left: 25%;
+            --x: -12px;
+            --y: -52px;
+        }
+
+        .button .paper.right {
+            --left: 75%;
+            --x: 12px;
+            --y: -52px;
+        }
+
+        .button .inner {
+            position: relative;
+            z-index: 1;
+            padding: 10px 0;
+            width: var(--button-width);
+            border-radius: 3px;
+            color: var(--text);
+            transform-origin: 50% 100%;
+            background: var(--b, var(--background));
+            box-shadow: 0 1px 2px var(--shadow), 0 4px 7px var(--shadow);
+            transition: background 0.4s;
+        }
+
+        .button .inner span {
+            display: block;
+            opacity: var(--span-o, 1);
+            transform: translateY(var(--span-y, 0)) translateZ(0);
+            transition: transform 0.3s ease var(--span-de, 0.5s), opacity 0.3s linear var(--span-de, 0.5s);
+        }
+
+        .button .inner svg {
+            width: 20px;
+            height: 16px;
+            display: block;
+            position: absolute;
+            top: 14px;
+            left: calc(var(--button-width) / 2);
+            margin-left: -10px;
+            fill: none;
+            stroke-width: 2px;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            stroke: var(--tick);
+            opacity: var(--tick-o, 0);
+            transform: scale(var(--tick-s, 0.5));
+            transition: transform 0.4s ease var(--tick-de, 0s), opacity 0.3s linear var(--tick-de, 0s);
+        }
+
+        .button .inner .zipper {
+            width: calc(var(--button-width) + 12px);
+            position: absolute;
+            top: 4px;
+            left: 0;
+            height: 12px;
+            overflow: hidden;
+            opacity: 0;
+        }
+
+        .button .inner .zipper:before,
+        .button .inner .zipper:after {
+            content: '';
+            position: absolute;
+            top: var(--top, 1px);
+            left: var(--left, 1px);
+            height: 3px;
+            width: 2px;
+            border-radius: 1px;
+            box-shadow: 5px 0 0 var(--zipper-lines), 10px 0 0 var(--zipper-lines), 15px 0 0 var(--zipper-lines), 20px 0 0 var(--zipper-lines), 25px 0 0 var(--zipper-lines), 30px 0 0 var(--zipper-lines), 35px 0 0 var(--zipper-lines), 40px 0 0 var(--zipper-lines), 45px 0 0 var(--zipper-lines), 50px 0 0 var(--zipper-lines), 55px 0 0 var(--zipper-lines), 60px 0 0 var(--zipper-lines), 65px 0 0 var(--zipper-lines), 70px 0 0 var(--zipper-lines), 75px 0 0 var(--zipper-lines), 80px 0 0 var(--zipper-lines), 85px 0 0 var(--zipper-lines), 90px 0 0 var(--zipper-lines), 95px 0 0 var(--zipper-lines), 100px 0 0 var(--zipper-lines), 105px 0 0 var(--zipper-lines), 110px 0 0 var(--zipper-lines), 115px 0 0 var(--zipper-lines), 120px 0 0 var(--zipper-lines), 125px 0 0 var(--zipper-lines), 130px 0 0 var(--zipper-lines), 135px 0 0 var(--zipper-lines), 140px 0 0 var(--zipper-lines), 145px 0 0 var(--zipper-lines);
+            background: var(--zipper-lines);
+        }
+
+        .button .inner .zipper:after {
+            --top: 8px;
+            --left: 3px;
+        }
+
+        .button .inner .zipper .gradient {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 200%;
+            right: 12px;
+            z-index: 1;
+            background: linear-gradient(to right, var(--background-transparent) 0%, var(--background-transparent) 33.33%, var(--background) 66.66%, var(--background) 100%);
+            background-size: 300% 100%;
+            background-position-x: var(--gradient, 100%);
+            transition: background-position var(--gradient-d, 0s) ease var(--gradient-de, 0s);
+        }
+
+        .button .inner .zipper .line {
+            width: calc(var(--button-width) + 12);
+            height: 2px;
+            margin: 5px 0;
+            position: relative;
+            left: -12px;
+            z-index: 2;
+            background: var(--zipper-line);
+            transform: translateX(calc(calc(var(--button-width) * -1) + 8px));
+        }
+
+        .button .inner .zipper .line:before,
+        .button .inner .zipper .line:after {
+            content: '';
+            position: absolute;
+            right: var(--right, 0);
+            width: var(--width, 6px);
+            height: var(--height, 2px);
+            border-radius: 1px;
+        }
+
+        .button .inner .zipper .line:before {
+            background: var(--zipper-end);
+        }
+
+        .button .inner .zipper .line:after {
+            --right: -7px;
+            --width: 8px;
+            --height: 8px;
+            transform: translate(0, -3px) scaleY(0.6) rotate(-45deg);
+            clip-path: polygon(0 0, 100% 0, 0 100%);
+            background: var(--zipper);
+        }
+
+        .button.compress {
+            --span-o: 0;
+            --span-y: 8px;
+            --span-de: 0s;
+            --tick-o: 1;
+            --tick-s: 1;
+            --tick-de: 3.2s;
+            --gradient: 0%;
+            --gradient-d: 1.8s;
+            --gradient-de: 1.8s;
+        }
+
+        .button.compress .paper {
+            animation: paper 1.8s linear forwards;
+        }
+
+        .button.compress .inner {
+            animation: fold 1.8s linear forwards;
+        }
+
+        .button.compress .inner .zipper {
+            animation: zipper 3.5s linear;
+        }
+
+        .button.compress .inner .zipper .line {
+            animation: line 1.2s linear forwards 1.8s;
+        }
+
+        @keyframes paper {
+
+            10%,
+            100% {
+                opacity: 1;
+            }
+
+            0%,
+            5% {
+                transform: translate(var(--x, 0), var(--y, -68px));
+            }
+
+            30% {
+                transform: translate(0, 1px);
+            }
+
+            50%,
+            70% {
+                transform: translate(0, -3px);
+            }
+
+            95%,
+            100% {
+                transform: translate(0, 4px);
+            }
+        }
+
+        @keyframes line {
+            60% {
+                transform: translateX(5px);
+            }
+
+            80% {
+                transform: translateX(-2px);
+            }
+
+            100% {
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes fold {
+
+            10%,
+            80% {
+                transform: perspective(500px) rotateX(-20deg) translateZ(16px);
+            }
+        }
+
+        @keyframes zipper {
+
+            20%,
+            90% {
+                opacity: 1;
+            }
+        }
+
+        html {
+            box-sizing: border-box;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        * {
+            box-sizing: inherit;
+        }
+
+        *:before,
+        *:after {
+            box-sizing: inherit;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            font-family: 'Inter', Arial;
+            justify-content: center;
+            align-items: center;
+            background: #E1E6F9;
+        }
+
+        body .dribbble {
+            position: fixed;
+            display: block;
+            right: 20px;
+            bottom: 20px;
+        }
+
+        body .dribbble img {
+            display: block;
+            height: 28px;
+        }
+
+        body .twitter {
+            position: fixed;
+            display: block;
+            right: 64px;
+            bottom: 14px;
+        }
+
+        body .twitter svg {
+            width: 32px;
+            height: 32px;
+            fill: #1da1f2;
+        }
+    </style>
+</head>
+
+<body>
+    <button class="button">
+        <div class="paper left"></div>
+        <div class="paper middle"></div>
+        <div class="paper right"></div>
+        <div class="inner">
+            <div class="zipper">
+                <div class="line"></div>
+                <div class="gradient"></div>
+            </div>
+            <span>Compress files</span>
+            <svg viewBox="0 0 20 16">
+                <polyline points="3 8.75 7.75 13.5 17 2.5"></polyline>
+            </svg>
+        </div>
+    </button>
+
+    <!-- dribbble - twitter -->
+    <a class="dribbble" href="https://dribbble.com/ai" target="_blank"><img
+            src="https://cdn.dribbble.com/assets/dribbble-ball-mark-2bd45f09c2fb58dbbfb44766d5d1d07c5a12972d602ef8b32204d28fa3dda554.svg"
+            alt=""></a>
+    <a class="twitter" target="_blank" href="https://twitter.com/aaroniker_me"><svg xmlns="http://www.w3.org/2000/svg"
+            width="72" height="72" viewBox="0 0 72 72">
+            <path
+                d="M67.812 16.141a26.246 26.246 0 0 1-7.519 2.06 13.134 13.134 0 0 0 5.756-7.244 26.127 26.127 0 0 1-8.313 3.176A13.075 13.075 0 0 0 48.182 10c-7.229 0-13.092 5.861-13.092 13.093 0 1.026.118 2.021.338 2.981-10.885-.548-20.528-5.757-26.987-13.679a13.048 13.048 0 0 0-1.771 6.581c0 4.542 2.312 8.551 5.824 10.898a13.048 13.048 0 0 1-5.93-1.638c-.002.055-.002.11-.002.162 0 6.345 4.513 11.638 10.504 12.84a13.177 13.177 0 0 1-3.449.457c-.846 0-1.667-.078-2.465-.231 1.667 5.2 6.499 8.986 12.23 9.09a26.276 26.276 0 0 1-16.26 5.606A26.21 26.21 0 0 1 4 55.976a37.036 37.036 0 0 0 20.067 5.882c24.083 0 37.251-19.949 37.251-37.249 0-.566-.014-1.134-.039-1.694a26.597 26.597 0 0 0 6.533-6.774z">
+            </path>
+        </svg>
+    </a>
+    <script>
+        document.querySelectorAll('.button').forEach(button => button.addEventListener('click', e => {
+            if (!button.classList.contains('compress')) {
+                button.classList.add('compress');
+                setTimeout(() => button.classList.remove('compress'), 4000);
+            }
+            e.preventDefault();
+        }));
+
+    </script>
+</body>
+
+</html>

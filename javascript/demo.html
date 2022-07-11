@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <p>Drop your favorite fruits below:</p>
+    <ol ondragenter="dragEnterHandler(event)" ondragover="dragOverHandler(event)" ondrop="dropHandler(event)">
+    </ol>
+
+    <script>
+        var internalDNDType = 'text/x-example';
+
+        function dragEnterHandler(event) {
+            console.log(event, "event")
+            var items = event.dataTransfer.items;
+            for (var i = 0; i < items.length; ++i) {
+                var item = items[i];
+                if (item.kind == 'string' && item.type == internalDNDType) {
+                    event.preventDefault();
+                    return;
+                }
+            }
+        }
+        function dragOverHandler(event) {
+            event.dataTransfer.dropEffect = 'move';
+            event.preventDefault();
+        }
+        function dropHandler(event) {
+            var li = document.createElement('li');
+            var data = event.dataTransfer.getData(internalDNDType);
+            if (data == 'fruit-apple') {
+                li.textContent = 'Apples';
+            } else if (data == 'fruit-orange') {
+                li.textContent = 'Oranges';
+            } else if (data == 'fruit-pear') {
+                li.textContent = 'Pears';
+            } else {
+                li.textContent = 'Unknown Fruit';
+            }
+            event.target.appendChild(li);
+        }
+    </script>
+</body>
+
+</html>

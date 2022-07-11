@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>slider</title>
+    <style>
+        :root {
+            --animation-speed: 2s;
+            --primary-color: #fff;
+            --secondary-color: #000;
+            --background-color: #212121;
+            --text-color: #fff;
+            --font: sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            display: grid;
+            place-items: center;
+            background: azure;
+            min-height: 100vh;
+            padding: 0 25px;
+        }
+
+        /* Main Wrapper Container */
+        .container-slider {
+            position: relative;
+            max-width: 700px;
+            width: 100%;
+            height: 400px;
+            border-radius: 20px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
+        }
+
+        /* Slider Container which contains images */
+        .slides {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Default Image Properties */
+        .slides img {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            object-fit: cover;
+            object-position: center;
+            opacity: 0;
+            transform: scale(0);
+            transition: all 0.5s ease-in-out;
+            transition-delay: 500ms;
+        }
+
+        /* Active Image or Current image to display */
+        .slides>img[data-active] {
+            opacity: 1;
+            transform: scale(1);
+            transition-delay: 0ms;
+            width: 100%;
+            height: 100%;
+            z-index: 10;
+        }
+
+        /* Image Slider Next And Previous Buttons */
+        .btn-slide {
+            position: absolute;
+            background: #f1f1f1;
+            width: 40px;
+            height: 40px;
+            padding: 10px;
+            border-radius: 50%;
+            opacity: 0;
+            border: 1px solid rgba(34, 34, 34, 0.287);
+            transition: opacity 300ms ease-in-out;
+            cursor: pointer;
+            overflow: hidden;
+            z-index: 10;
+        }
+
+        .btn-slide>img {
+            width: 100%;
+        }
+
+        /* Show Buttons when user hover on the slider Container */
+        .container-slider:hover>.btn-slide {
+            opacity: 1;
+        }
+
+        /* Previous and Next Button Position Absolute */
+        .prev,
+        .next {
+            top: 50%;
+            transform: translateY(-60%);
+        }
+
+        .prev {
+            left: 20px;
+        }
+
+        .next {
+            right: 20px;
+        }
+
+        /* Bottom Dots Container  */
+        .container-dots {
+            position: absolute;
+            bottom: 20px;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            z-index: 10;
+        }
+
+        /* Sigle Dot style */
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            border: 3px solid #f1f1f1;
+            margin: 0 5px;
+            background: #f1f1f1;
+            cursor: pointer;
+            transition: background-color 500ms ease-in-out;
+        }
+
+        /* Change the color of bg when user hover on it. */
+        .dot:hover {
+            opacity: 0.9;
+            background: rgb(32, 32, 32);
+        }
+
+        /* Current or active dot */
+        .dot[data-active="true"] {
+            background: rgb(32, 32, 32);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container-slider">
+        <!-- Slider Container with images...  -->
+        <div class="slides"></div>
+
+        <!--  Previous Button  -->
+        <button class="btn-slide prev">
+            <img src="https://imgur.com/SUyRJqI.png" alt="prevBtn" />
+        </button>
+
+        <!--  Next Button  -->
+        <button class="btn-slide next">
+            <img src=" https://imgur.com/M6rDsRR.png" alt="nextBtn" />
+        </button>
+
+        <!--  Container for dots  -->
+        <div class="container-dots"></div>
+    </div>
+
+    <script>
+        const slides = document.querySelector(".slides");
+        const containerDots = document.querySelector(".container-dots");
+
+        var slideIndex = 1;
+
+        // Images container
+        const images = [
+            { src: "https://rb.gy/ohx0bd" },
+            { src: "https://rb.gy/gggxy8" },
+            { src: "https://rb.gy/z2a0fy" },
+            { src: "https://rb.gy/nsefjh" },
+            { src: "https://rb.gy/dssu2a" }
+        ];
+
+        // Adding images and dots to the Respective Container
+        images.map((img) => {
+            // Creating Image Element and adding src of that image
+            var imgTag = document.createElement("img");
+            imgTag.src = img.src;
+
+            // Creating Dot (div) Element adding 'dot' class to it
+            var dot = document.createElement("div");
+            dot.classList.add("dot");
+
+            //  Appending the image and dots to respective container
+            slides.appendChild(imgTag);
+            containerDots.appendChild(dot);
+        });
+
+        // Adding EventListener to All dots so that when user click on it trigger move dots;
+        const dots = containerDots.querySelectorAll("*").forEach((dot, index) => {
+            dot.addEventListener("click", () => {
+                moveDot(index + 1);
+            });
+        });
+
+        // It helps to move the dot, it take "index" as parameter and update the slideIndex
+        function moveDot(index) {
+            slideIndex = index;
+            updateImageAndDot();
+        }
+
+        // Update Image And Slide Dot according to the [data-active]
+        function updateImageAndDot() {
+            /* ...........Updating Image.............. */
+            console.log("slides.querySelector", slides.querySelector("[data-active]"))
+
+            const activeSlide = slides.querySelector("[data-active]");
+            slides.children[slideIndex - 1].dataset.active = true;
+            activeSlide && delete activeSlide.dataset.active;
+
+            /* ...........Updating Dots.............. */
+            const activeDot = containerDots.querySelector("[data-active]");
+            containerDots.children[slideIndex - 1].dataset.active = true;
+            activeDot && delete activeDot.dataset.active;
+        }
+
+        // Slide Next Button Click Event
+        const nextSlide = () => {
+            // it will update the slideIndex on the basis of the images.length as it gets greater than images.length, this will initialize to the 1
+            if (slideIndex !== images.length) {
+                ++slideIndex;
+            } else if (slideIndex === images.length) {
+                slideIndex = 1;
+            }
+            updateImageAndDot();
+        };
+
+        const nextBtn = document.querySelector(".next");
+        nextBtn.onclick = nextSlide;
+
+        // Slide Previous Button Click Event
+        const prevSlide = () => {
+            // It will check if the slideIndex is less equal to 1 then change it to the images.legnth, it will enable infinite scrolling
+            if (slideIndex !== 1) {
+                --slideIndex;
+            } else if (slideIndex === 1) {
+                slideIndex = images.length;
+            }
+            updateImageAndDot();
+        };
+
+        const prevBtn = document.querySelector(".prev");
+        prevBtn.onclick = prevSlide;
+
+        // Show the Image as the Page Loads;
+        updateImageAndDot();
+
+        window.onload = function () {
+            var loadTime =
+                window.performance.timing.domContentLoadedEventEnd -
+                window.performance.timing.navigationStart;
+            console.log("Page load time is " + loadTime);
+        };
+    </script>
+</body>
+
+</html>
